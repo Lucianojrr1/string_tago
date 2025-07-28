@@ -1,0 +1,36 @@
+// Luciano Junior 28/07/2025
+// Captura valor bruto em string e quebra em variáveis separadas
+
+try {
+  // Captura o valor bruto da variável 'payload'
+  const raw_payload = payload.find((item) => item.variable === "payload");
+
+  if (!raw_payload || typeof raw_payload.value !== "string") {
+    throw new Error("Variável payload não encontrada ou sem valor.");
+  }
+
+  const raw_string = raw_payload.value;
+
+  // Remove chaves { }, aspas " e quebra a string em pares
+  const cleaned = raw_string
+    .replace(/^{|}$/g, '')     // remove { no início e } no fim
+    .replace(/"/g, '');        // remove todas aspas
+
+  const pairs = cleaned.split(',');
+
+  const group = String(new Date().getTime());
+
+  // Transforma os pares em objetos { variable, value }
+  const parsed = pairs.map(pair => {
+    const [key, value] = pair.split(':');
+    return {
+      variable: key,
+      value: parseFloat(value),
+      group
+    };
+  });
+
+  payload = parsed;
+} catch (e) {
+  console.log("Erro no parser:", e);
+}
